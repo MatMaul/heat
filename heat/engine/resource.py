@@ -1099,11 +1099,18 @@ class Resource(object):
         name = '%s-%s-%s' % (self.stack.name,
                              self.name,
                              short_id.get_id(self.uuid))
+        name = self.sanitize_physical_resource_name(name)
 
         if self.physical_resource_name_limit:
             name = self.reduce_physical_resource_name(
                 name, self.physical_resource_name_limit)
         return name
+
+    @staticmethod
+    def sanitize_physical_resource_name(name):
+        # CERN uses the OpenStack server name to register in the DNS,
+        # which can forbid some characters like _
+        return name.replace('_', '')
 
     @staticmethod
     def reduce_physical_resource_name(name, limit):
